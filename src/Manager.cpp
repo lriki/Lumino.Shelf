@@ -32,7 +32,7 @@ void Manager::Build()
 	}
 
 	// template フォルダからそのままコピーするもの
-
+	FileSystem::CopyDirectory(PathName(m_templateDirectory, _T("bootstrap")), PathName(m_releaseDirectory, _T("bootstrap")), true, true);
 }
 
 
