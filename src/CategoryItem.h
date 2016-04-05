@@ -1,17 +1,27 @@
 #pragma once
 #include "Page.h"
+#include "PageToc.h"
 
 class CategoryItem
 	: public Object
 {
 public:
 	void Initialize(CategoryManager* manager, CategoryItem* parent, const String& source);
+	String GetCaption() const;
+	Page* GetIndexPage() const { return m_indexPage; }
+
+	void AddChild(CategoryItem* item) { m_childList.Add(item); }
+	const Array<CategoryItemPtr>& GetChildren() const { return m_childList; }
 
 private:
-	CategoryManager*	m_manager;
-	CategoryItem*		m_parent;
-	CategoryItemSource	m_itemSource;
-	String				m_sourceString;
+	void ReadTocFile(const PathName& filePath);
+	
+	CategoryManager*		m_manager;
+	CategoryItem*			m_parent;
+	Array<CategoryItemPtr>	m_childList;
+	CategoryItemSource		m_itemSource;
+	String					m_sourceString;
 
-	PagePtr				m_indexPage;	// m_itemSource ‚ª IndexFile ‚Ì‚Æ‚«‚Ìƒtƒ@ƒCƒ‹
+	PagePtr					m_indexPage;
+	PageTocPtr				m_toc;
 };

@@ -33,6 +33,7 @@ void Manager::Build()
 
 	// template フォルダからそのままコピーするもの
 	FileSystem::CopyDirectory(PathName(m_templateDirectory, _T("bootstrap")), PathName(m_releaseDirectory, _T("bootstrap")), true, true);
+	FileSystem::Copy(PathName(m_templateDirectory, _T("page_contents.css")), PathName(m_releaseDirectory, _T("page_contents.css")), true);
 }
 
 

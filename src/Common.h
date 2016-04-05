@@ -9,12 +9,13 @@ class CategoryItem;
 typedef RefPtr<CategoryItem>	CategoryItemPtr;
 class Page;
 typedef RefPtr<Page>	PagePtr;
+class PageToc;
 
 
 enum class CategoryItemSource
 {
 	Caption,
-	IndexFile,
+	File,
 	Directory,
 };
 

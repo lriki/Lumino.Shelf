@@ -30,7 +30,13 @@ void Page::MakePageContents()
 {
 	String text;
 	String args = String::Format(_T("-f markdown -t html5 -o tmp \"{0}\""), m_srcFileFullPath);
-	Process::Execute(_T("pandoc"), args);	// TODO: 標準出力のエンコーディングを指定したい・・・。とりあえず今は一度ファイルに落とす
+	String stdErr;
+	int exitCode = Process::Execute(_T("pandoc"), args, nullptr, &stdErr);	// TODO: 標準出力のエンコーディングを指定したい・・・。とりあえず今は一度ファイルに落とす
+	if (exitCode != 0)
+	{
+		Console::WriteLineError(stdErr);
+		LN_THROW(0, InvalidOperationException);
+	}
 
 	// 一時ファイルを開きなおして解析する
 	StreamReader reader(_T("tmp"), Encoding::GetUTF8Encoding());
@@ -59,6 +65,7 @@ void Page::MakePageContents()
 	{
 		// http://am-yu.net/2014/04/20/bootstrap3-affix-scrollspy/
 		StringWriter writer;
+		writer.WriteLine(_T(R"(<div class="col-xs-2">)"));
 		writer.WriteLine(_T(R"(<nav class="affix-nav"><ul class="nav">)"));
 		writer.WriteLine(_T(R"(<li class="cap">page contents</li>)"));
 		for (auto& e : m_linkElementList)
@@ -66,7 +73,8 @@ void Page::MakePageContents()
 			writer.WriteLine(String::Format(_T(R"(<li><a href="#{0}">{1}</a></li>)"), e.href, e.text));
 		}
 		writer.WriteLine(_T(R"(</ul></nav>)"));
-		m_pageNavListText = writer.ToString();
+		writer.WriteLine(_T(R"(</div>)"));
+		m_pageSideNavText = writer.ToString();
 	}
 }
 
@@ -80,12 +88,21 @@ void Page::ExportPageFile()
 	//	tocTree = m_ownerCategory->m_toc->MakeTocTree(this);
 	//}
 
+	int contentsCols = 8;
+
+	StringWriter contentsText;
+	contentsText.WriteLine(_T("<div class=\"col-md-{0}\">"), contentsCols);
+	contentsText.WriteLine(_T("<div class=\"lnpc\">"));
+	contentsText.WriteLine(m_pageContentsText);
+	contentsText.WriteLine(_T("</div>"));
+	contentsText.WriteLine(_T("</div>"));
+	
 	String pageText = m_manager->GetPageTemplateText();
 	pageText = pageText.Replace(_T("$(LN_TO_ROOT_PATH)"), m_relpathToRoot);
-	//pageText = pageText.Replace(_T("NAVBAR_ITEMS"), m_ownerCategory->MakeNavbarTextInActive(this));
+	pageText = pageText.Replace(_T("$(NAVBAR_ITEMS)"), m_manager->GetCategoryManager()->MakeNavBarListText(this));
 	//pageText = pageText.Replace(_T("TOC_TREE"), tocTree);
-	//pageText = pageText.Replace(_T("PAGE_CONTENTS"), m_pageContentsText);
-	//pageText = pageText.Replace(_T("PAGE_INDEX_LIST"), m_pageNavListText);
+	pageText = pageText.Replace(_T("$(PAGE_CONTENTS)"), contentsText.ToString());
+	pageText = pageText.Replace(_T("$(PAGE_SIDENAV)"), m_pageSideNavText);
 
 	FileSystem::CreateDirectory(m_outputFileFullPath.GetParent());
 	FileSystem::WriteAllText(m_outputFileFullPath.c_str(), pageText, Encoding::GetUTF8Encoding());

@@ -13,6 +13,8 @@ public:
 	void SetReleaseDirectory(const PathName& path) { m_releaseDirectory = path; }
 	const PathName& GetReleaseDirectory() const { return m_releaseDirectory; }
 
+
+	CategoryManager* GetCategoryManager() { return &m_categoryManager; }
 	void Build();
 
 	String GetPageTemplateText();
