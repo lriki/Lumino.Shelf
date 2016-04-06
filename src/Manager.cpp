@@ -13,7 +13,7 @@ void Manager::Build()
 {
 	PathName homePageFile(m_sourceDirectory, _T("index.md"));
 	m_homePage = PagePtr::MakeRef();
-	m_homePage->Initialize(this, nullptr, homePageFile);
+	m_homePage->Initialize(this, nullptr, homePageFile, nullptr);
 
 	PathName categoriesFile(m_sourceDirectory, _T("categories.md"));
 	m_categoryManager.Initialize(this, categoriesFile);

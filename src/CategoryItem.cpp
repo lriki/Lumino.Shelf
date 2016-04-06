@@ -29,7 +29,7 @@ void CategoryItem::Initialize(CategoryManager* manager, CategoryItem* parent, co
 	{
 		m_itemSource = CategoryItemSource::File;
 		m_indexPage = PagePtr::MakeRef();
-		m_indexPage->Initialize(m_manager->GetManager(), this, srcFile);
+		m_indexPage->Initialize(m_manager->GetManager(), this, srcFile, nullptr);
 	}
 	// フォルダであれば中に目次ファイルがあるはず
 	else if (FileSystem::ExistsDirectory(srcFile))
@@ -39,13 +39,14 @@ void CategoryItem::Initialize(CategoryManager* manager, CategoryItem* parent, co
 		// index
 		PathName indexPath(srcFile, _T("index.md"));
 		m_indexPage = PagePtr::MakeRef();
-		m_indexPage->Initialize(m_manager->GetManager(), this, indexPath);
+		m_indexPage->Initialize(m_manager->GetManager(), this, indexPath, nullptr);
 
 		// toc
 		PathName tocPath(srcFile, _T("toc.md"));
 		if (tocPath.ExistsFile())
 		{
-			ReadTocFile(tocPath);
+			m_toc = PageTocPtr::MakeRef();
+			m_toc->Initialize(this, tocPath);
 		}
 		else
 		{
@@ -76,74 +77,4 @@ String CategoryItem::GetCaption() const
 		break;
 	}
 	return String(_T("invalid caption"));
-}
-
-//------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
-void CategoryItem::ReadTocFile(const PathName& filePath)
-{
-#if 0
-	struct StackItem
-	{
-		PagePtr item;
-		int		level;
-	};
-
-	Array<PagePtr>& chilren = m_indexPage->GetChildren();
-
-	Stack<StackItem> itemStack;
-	int level = 0;
-	StreamReader reader(filePath, Encoding::GetUTF8Encoding());
-	String line;
-	while (reader.ReadLine(&line))
-	{
-		MatchResult result;
-		if (Regex::Match(line, _T(R"(\s*-\s*(.*))"), &result))
-		{
-			// 行頭のスペースの数を数える
-			int spaceLevel = 0;
-			for (int i = 0; i < line.GetLength(); ++i)
-			{
-				if (isspace(line[i]))
-					spaceLevel++;
-				else
-					break;
-			}
-
-			// インデントが変わったのでスタック調整
-			if (spaceLevel < level)
-			{
-				itemStack.Pop();
-			}
-			else if (spaceLevel > level)
-			{
-				StackItem si = { chilren.GetLast(), spaceLevel };
-				itemStack.Push(si);
-			}
-			level = spaceLevel;
-
-			// 現在の親は？
-			Page* parent = nullptr;
-			if (!itemStack.IsEmpty())
-			{
-				parent = itemStack.GetTop().item;
-			}
-
-			// Item 作成
-			auto item = PagePtr::MakeRef();
-			item->Initialize(this, parent, result.GetGroup(1));
-
-			// ルート要素ならリストへ覚えておく
-			if (parent == nullptr)
-			{
-				chilren.Add(item);
-			}
-			else
-			{
-				parent->GetChildren().Add(item);
-			}
-		}
-	}
-#endif
 }

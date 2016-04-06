@@ -1,5 +1,4 @@
 - index.md
 - "Documents"
-	- documents/tutorial/
 	- documents/reference/
 - download/index.md

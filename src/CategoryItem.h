@@ -7,6 +7,7 @@ class CategoryItem
 {
 public:
 	void Initialize(CategoryManager* manager, CategoryItem* parent, const String& source);
+	CategoryManager* GetCategoryManager() const { return m_manager; }
 	String GetCaption() const;
 	Page* GetIndexPage() const { return m_indexPage; }
 
@@ -14,7 +15,6 @@ public:
 	const Array<CategoryItemPtr>& GetChildren() const { return m_childList; }
 
 private:
-	void ReadTocFile(const PathName& filePath);
 	
 	CategoryManager*		m_manager;
 	CategoryItem*			m_parent;

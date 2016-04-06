@@ -10,7 +10,7 @@
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-void Page::Initialize(Manager* manager, CategoryItem* ownerCategory, const PathName& srcFileFullPath)
+void Page::Initialize(Manager* manager, CategoryItem* ownerCategory, const PathName& srcFileFullPath, Page* parent)
 {
 	m_manager = manager;
 	m_ownerCategory = ownerCategory;
@@ -19,7 +19,7 @@ void Page::Initialize(Manager* manager, CategoryItem* ownerCategory, const PathN
 	m_outputFileRelPath = m_srcFileRelPath.ChangeExtension(_T("html"));
 	m_outputFileFullPath = PathName(m_manager->GetReleaseDirectory(), m_outputFileRelPath);
 	m_relpathToRoot = m_outputFileFullPath.GetParent().MakeRelative(m_manager->GetReleaseDirectory());
-
+	m_parentPage = parent;
 	m_manager->AddPage(this);
 }
 

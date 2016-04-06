@@ -4,7 +4,7 @@ class Page
 	: public Object
 {
 public:
-	void Initialize(Manager* manager, CategoryItem* ownerCategory, const PathName& srcFileFullPath);
+	void Initialize(Manager* manager, CategoryItem* ownerCategory, const PathName& srcFileFullPath, Page* parent);
 
 	CategoryItem* GetOwnerCategory() const { return m_ownerCategory; }
 	const PathName& GetOutputRelPath() const { return m_outputFileRelPath; }
@@ -32,6 +32,7 @@ private:
 	PathName			m_outputFileFullPath;
 	PathName			m_relpathToRoot;
 
+	Page*				m_parentPage;
 	Array<PagePtr>		m_children;
 
 	String				m_caption;
