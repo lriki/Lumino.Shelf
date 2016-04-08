@@ -1,11 +1,7 @@
-Lumino.Shelf
-========
+LuminoShelf
+========================================
 
-testtest
---------
+概要
+--------------------
+LuminoShelf は Markdown 記法で書かれたソースファイルからシンプルな静的 Web サイトを生成するツールです。
 
-test3
-
-testtest2
---------
-testtest

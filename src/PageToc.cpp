@@ -75,3 +75,40 @@ void PageToc::Initialize(CategoryItem* owner, const PathName& tocFilePath)
 	}
 }
 
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+String PageToc::MakeTocTreeText(Page* currentPage)
+{
+	StringWriter writer;
+	writer.WriteLine(_T("<div class=\"col-md-2\">"));
+	writer.WriteLine(_T("<ul class=\"list-group\">"));
+
+	for (PageTocItemPtr item : m_rootItems)
+	{
+		writer.WriteLine(_T("<li class=\"list-group-item\">"));
+		writer.WriteLine(_T("<span class=\"tree-toggler glyphicon glyphicon-triangle-bottom\"></span>"));
+		writer.WriteLine(String::Format(_T("<label class=\"nav-header\">{0}</label>"), item->GetCaption()));
+
+		writer.WriteLine(_T("<ul class=\"nav nav-list tree-item\">"));
+		for (auto& child : item->GetChildren())
+		{
+			writer.WriteLine(String::Format(_T("<li><a href=\"{0}\">{1}</a></li>"), currentPage->MakeRelativePath(child->GetPage()), child->GetCaption()));
+		}
+		writer.WriteLine(_T("</ul>"));
+
+		writer.WriteLine(_T("</li>"));
+	}
+
+	writer.WriteLine(_T("</ul>"));
+	writer.WriteLine(_T("</div>"));
+	return writer.ToString();
+}
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+void PageToc::MakeTocTreeItemText(StringWriter* writer, PageTocItem* item)
+{
+
+}

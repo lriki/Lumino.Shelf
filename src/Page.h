@@ -6,6 +6,7 @@ class Page
 public:
 	void Initialize(Manager* manager, CategoryItem* ownerCategory, const PathName& srcFileFullPath, Page* parent);
 
+	String MakeRelativePath(Page* page) const;	// このページから、root に戻って、指定のページに移動するようなパス
 	CategoryItem* GetOwnerCategory() const { return m_ownerCategory; }
 	const PathName& GetOutputRelPath() const { return m_outputFileRelPath; }
 	const PathName& GetRelPathToRoot() const { return m_relpathToRoot; }

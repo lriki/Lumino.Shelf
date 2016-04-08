@@ -14,6 +14,10 @@ public:
 	PageTocItem* GetParent() const { return m_parent; }
 
 	void AddChild(PageTocItem* item) { m_childItems.Add(item); item->SetParent(this); }
+	const Array<PageTocItemPtr>& GetChildren() const { return m_childItems; }
+
+	String GetCaption() const;
+	Page* GetPage() const { return m_page; }
 
 private:
 	PageToc*				m_ownerToc;

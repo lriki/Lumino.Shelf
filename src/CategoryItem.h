@@ -10,6 +10,7 @@ public:
 	CategoryManager* GetCategoryManager() const { return m_manager; }
 	String GetCaption() const;
 	Page* GetIndexPage() const { return m_indexPage; }
+	PageToc* GetToc() const { return m_toc; }
 
 	void AddChild(CategoryItem* item) { m_childList.Add(item); }
 	const Array<CategoryItemPtr>& GetChildren() const { return m_childList; }

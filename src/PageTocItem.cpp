@@ -32,3 +32,14 @@ void PageTocItem::Initialize(PageToc* toc, const String& src)
 	}
 }
 
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+String PageTocItem::GetCaption() const
+{
+	if (m_page != nullptr)
+	{
+		return m_page->GetCaption();
+	}
+	return m_caption;
+}

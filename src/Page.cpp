@@ -23,6 +23,14 @@ void Page::Initialize(Manager* manager, CategoryItem* ownerCategory, const PathN
 	m_manager->AddPage(this);
 }
 
+//-----------------------------------------------------------------------------
+//
+//-----------------------------------------------------------------------------
+String Page::MakeRelativePath(Page* page) const
+{
+	return String::Format(_T("{0}/{1}"), GetRelPathToRoot(), page->GetOutputRelPath());
+}
+
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
@@ -84,9 +92,9 @@ void Page::MakePageContents()
 void Page::ExportPageFile()
 {
 	String tocTree;
-	//if (m_ownerCategory->m_toc != nullptr) {
-	//	tocTree = m_ownerCategory->m_toc->MakeTocTree(this);
-	//}
+	if (m_ownerCategory != nullptr && m_ownerCategory->GetToc() != nullptr) {
+		tocTree = m_ownerCategory->GetToc()->MakeTocTreeText(this);
+	}
 
 	int contentsCols = 8;
 
@@ -100,7 +108,7 @@ void Page::ExportPageFile()
 	String pageText = m_manager->GetPageTemplateText();
 	pageText = pageText.Replace(_T("$(LN_TO_ROOT_PATH)"), m_relpathToRoot);
 	pageText = pageText.Replace(_T("$(NAVBAR_ITEMS)"), m_manager->GetCategoryManager()->MakeNavBarListText(this));
-	//pageText = pageText.Replace(_T("TOC_TREE"), tocTree);
+	pageText = pageText.Replace(_T("$(PAGE_TOC)"), tocTree);
 	pageText = pageText.Replace(_T("$(PAGE_CONTENTS)"), contentsText.ToString());
 	pageText = pageText.Replace(_T("$(PAGE_SIDENAV)"), m_pageSideNavText);
 

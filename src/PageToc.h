@@ -13,7 +13,10 @@ public:
 	CategoryItem* GetOwnerCategory() const { return m_ownerCategory; }
 	const PathName& GetDirectoryFullPath() const { return m_dirFullPath; }
 
+	String MakeTocTreeText(Page* currentPage);
+
 private:
+	void MakeTocTreeItemText(StringWriter* writer, PageTocItem* item);
 	CategoryItem*			m_ownerCategory;
 	Array<PageTocItemPtr>	m_rootItems;
 	PathName				m_dirFullPath;
