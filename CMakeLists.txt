@@ -14,6 +14,8 @@ set(LN_LuminoShelf_Sources
 	src/Page.h
 	src/PageToc.cpp
 	src/PageToc.h
+	src/PageTocItem.cpp
+	src/PageTocItem.h
 )
 
 include_directories(

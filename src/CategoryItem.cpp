@@ -20,9 +20,11 @@ void CategoryItem::Initialize(CategoryManager* manager, CategoryItem* parent, co
 	PathName srcFile(srcDir, source);
 	
 	// "" で囲まれていればキャプション文字とする
-	if (Regex::Match(source, _T("\"(.*)\"")))
+	MatchResult result;
+	if (Regex::Match(source, _T("\"(.*)\""), &result))
 	{
 		m_itemSource = CategoryItemSource::Caption;
+		m_sourceString = result.GetGroup(1);
 	}
 	// ファイルであればページのソースファイルとする
 	else if (FileSystem::ExistsFile(srcFile))
