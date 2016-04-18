@@ -1,7 +1,11 @@
 #pragma once
 #include "CategoryManager.h"
 
+class Manager;
+using ManagerPtr = RefPtr<Manager>;
+
 class Manager
+	: public Object
 {
 public:
 	void SetSourceDirectory(const PathName& path) { m_sourceDirectory = path; }
@@ -14,17 +18,20 @@ public:
 	const PathName& GetReleaseDirectory() const { return m_releaseDirectory; }
 
 
-	CategoryManager* GetCategoryManager() { return &m_categoryManager; }
+	CategoryManager* GetCategoryManager() { return m_categoryManager; }
 	void Build();
 
 	String GetPageTemplateText();
 	void AddPage(PagePtr page) { m_allPages.Add(page); }
 
 private:
-	PathName		m_sourceDirectory;
-	PathName		m_templateDirectory;
-	PathName		m_releaseDirectory;
-	CategoryManager	m_categoryManager;
-	PagePtr			m_homePage;
-	Array<PagePtr>	m_allPages;
+	friend class Serializer;
+	PathName			m_sourceDirectory;
+	PathName			m_templateDirectory;
+	PathName			m_releaseDirectory;
+	CategoryManagerPtr	m_categoryManager;
+	PagePtr				m_homePage;
+
+
+	Array<PagePtr>		m_allPages;
 };

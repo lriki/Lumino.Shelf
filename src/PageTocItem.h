@@ -1,6 +1,7 @@
 #pragma once
 #include "Page.h"
 
+#if 0
 class PageTocItem;
 typedef RefPtr<PageTocItem> PageTocItemPtr;
 
@@ -27,3 +28,5 @@ private:
 	String					m_caption;
 	PagePtr					m_page;
 };
+
+#endif

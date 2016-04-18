@@ -3,11 +3,60 @@
 #include "Manager.h"
 #include "CategoryManager.h"
 #include "CategoryItem.h"
+#include "Serializer.h"
 
 //==============================================================================
 // CategoryItem
 //==============================================================================
 
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+CategoryItem::CategoryItem(CategoryManager* manager)
+	: m_manager(manager)
+	, m_parent(nullptr)
+{
+}
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+void CategoryItem::PostSerialize()
+{
+	// src ‚ª‚ ‚ê‚Îƒy[ƒW‚ð“Ç‚Ýž‚ñ‚Å‚Ý‚é
+	if (!m_srcPagePath.IsEmpty())
+	{
+		Serializer serializer;
+		serializer.LoadCategoryIndex(this, m_srcPagePath);
+	}
+}
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+void CategoryItem::AddChild(CategoryItem* child)
+{
+	m_children.Add(child);
+	child->m_parent = this;
+}
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+String CategoryItem::GetCaption() const
+{
+	if (!m_caption.IsEmpty())
+	{
+		return m_caption;
+	}
+	if (m_homePage != nullptr)
+	{
+		return m_homePage->GetCaption();
+	}
+	return String(_T("invalid caption."));
+}
+
+#if 0
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
@@ -80,3 +129,4 @@ String CategoryItem::GetCaption() const
 	}
 	return String(_T("invalid caption"));
 }
+#endif

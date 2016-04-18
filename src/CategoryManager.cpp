@@ -6,17 +6,24 @@
 // CategoryManager
 //==============================================================================
 
-struct StackItem
-{
-	CategoryItemPtr item;
-	int				level;
-};
 
+CategoryManager::CategoryManager(Manager* manager)
+	: m_manager(manager)
+{
+}
+
+#if 0
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
 void CategoryManager::Initialize(Manager* manager, const PathName& categoriesFile)
 {
+	struct StackItem
+	{
+		CategoryItemPtr item;
+		int				level;
+	};
+
 	m_manager = manager;
 
 	Stack<StackItem> itemStack;
@@ -73,6 +80,7 @@ void CategoryManager::Initialize(Manager* manager, const PathName& categoriesFil
 		}
 	}
 }
+#endif
 
 //------------------------------------------------------------------------------
 //
@@ -106,11 +114,11 @@ void CategoryManager::MakeNavBarItemText(StringWriter* writer, Page* curPage, Ca
 {
 	// <a>～</a> を作る
 	String linkSpan;
-	if (item->GetIndexPage() != nullptr)
+	if (item->GetHomePage() != nullptr)
 	{
 		// root に戻って、指定のページに移動するようなパスで作る
-		String relPath = String::Format(_T("{0}/{1}"), curPage->GetRelPathToRoot(), item->GetIndexPage()->GetOutputRelPath());
-		linkSpan = String::Format(_T("<a href=\"{0}\">{1}</a>"), relPath.Replace(_T("\\"), _T("/")), item->GetIndexPage()->GetCaption());
+		String relPath = String::Format(_T("{0}/{1}"), curPage->GetRelPathToRoot(), item->GetHomePage()->GetOutputRelPath());
+		linkSpan = String::Format(_T("<a href=\"{0}\">{1}</a>"), relPath.Replace(_T("\\"), _T("/")), item->GetHomePage()->GetCaption());
 	}
 	else
 	{

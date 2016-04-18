@@ -16,6 +16,8 @@ set(LN_LuminoShelf_Sources
 	src/PageToc.h
 	src/PageTocItem.cpp
 	src/PageTocItem.h
+	src/Serializer.cpp
+	src/Serializer.h
 )
 
 include_directories(

@@ -11,6 +11,7 @@
 //------------------------------------------------------------------------------
 void Manager::Build()
 {
+#if 0
 	PathName homePageFile(m_sourceDirectory, _T("index.md"));
 	m_homePage = PagePtr::MakeRef();
 	m_homePage->Initialize(this, nullptr, homePageFile, nullptr);
@@ -18,6 +19,7 @@ void Manager::Build()
 	PathName categoriesFile(m_sourceDirectory, _T("categories.md"));
 	m_categoryManager.Initialize(this, categoriesFile);
 
+#endif
 
 	// ページ内容を作る
 	for (PagePtr page : m_allPages)
@@ -33,7 +35,7 @@ void Manager::Build()
 
 	// template フォルダからそのままコピーするもの
 	FileSystem::CopyDirectory(PathName(m_templateDirectory, _T("bootstrap")), PathName(m_releaseDirectory, _T("bootstrap")), true, true);
-	FileSystem::Copy(PathName(m_templateDirectory, _T("page_contents.css")), PathName(m_releaseDirectory, _T("page_contents.css")), true);
+	FileSystem::Copy(PathName(m_templateDirectory, _T("github-markdown.css")), PathName(m_releaseDirectory, _T("github-markdown.css")), true);
 }
 
 
