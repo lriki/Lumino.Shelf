@@ -11,6 +11,8 @@ public:
 
 	const String& GetCaption() const { return m_caption; }
 
+	bool HasUrl() const { return !m_srcFullPath.IsEmpty(); }
+
 	CategoryItem* GetOwnerCategory() const { return m_ownerCategory; }
 	const PathName& GetOutputRelPath() const { return m_outputFileRelPath; }
 	const PathName& GetRelPathToRoot() const { return m_relpathToRoot; }

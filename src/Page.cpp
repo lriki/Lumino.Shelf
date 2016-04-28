@@ -51,7 +51,8 @@ void Page::AddChild(Page* child)
 //-----------------------------------------------------------------------------
 String Page::MakeRelativePath(Page* page) const
 {
-	return String::Format(_T("{0}/{1}"), GetRelPathToRoot(), page->GetOutputRelPath());
+	String path = String::Format(_T("{0}/{1}"), GetRelPathToRoot(), page->GetOutputRelPath());
+	return path.Replace(_T("\\"), _T("/"));
 }
 
 //------------------------------------------------------------------------------
@@ -119,7 +120,7 @@ void Page::ExportPageFile()
 		tocTree = m_ownerCategory->GetToc()->MakeTocTreeText(this);
 	}
 
-	int contentsCols = 8;
+	int contentsCols = 7;
 
 	StringWriter contentsText;
 	contentsText.WriteLine(_T("<div class=\"col-md-{0}\">"), contentsCols);
