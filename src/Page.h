@@ -11,7 +11,11 @@ public:
 
 	const String& GetCaption() const { return m_caption; }
 
+	/** ページのパスを持っているか (キャプションだけのノードではないか) */
 	bool HasUrl() const { return !m_srcFullPath.IsEmpty(); }
+
+	/** ソースファイルが .html ファイルであるか */
+	bool IsRawHTMLPage() const { return m_srcFileFullPath.CheckExt(_T(".html")); }
 
 	CategoryItem* GetOwnerCategory() const { return m_ownerCategory; }
 	const PathName& GetOutputRelPath() const { return m_outputFileRelPath; }

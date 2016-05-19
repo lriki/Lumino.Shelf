@@ -21,7 +21,7 @@ public:
 	CategoryManager* GetCategoryManager() { return m_categoryManager; }
 	void Build();
 
-	String GetPageTemplateText();
+	String GetPageTemplateText(const PathName& priority);
 	void AddPage(PagePtr page) { m_allPages.Add(page); }
 
 private:

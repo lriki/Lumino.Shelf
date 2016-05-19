@@ -7,8 +7,6 @@
 //==============================================================================
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 ManagerPtr Serializer::LoadManager(const PathName& xmlFileFullPath)
 {
 	XmlFileReader reader(xmlFileFullPath);
@@ -22,8 +20,6 @@ ManagerPtr Serializer::LoadManager(const PathName& xmlFileFullPath)
 	return nullptr;
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 void Serializer::LoadCategoryIndex(CategoryItem* category, const PathName& xmlFileFullPath)
 {
@@ -39,8 +35,6 @@ void Serializer::LoadCategoryIndex(CategoryItem* category, const PathName& xmlFi
 	}
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 ManagerPtr Serializer::Load_shelf(XmlFileReader* reader)
 {
@@ -70,8 +64,6 @@ ManagerPtr Serializer::Load_shelf(XmlFileReader* reader)
 }
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 PagePtr Serializer::Load_homepage(XmlFileReader* reader, CategoryItem* ownerCategory)
 {
 	// child elements
@@ -89,8 +81,6 @@ PagePtr Serializer::Load_homepage(XmlFileReader* reader, CategoryItem* ownerCate
 	return nullptr;
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 PagePtr Serializer::Load_page(XmlFileReader* reader, Page* parent, CategoryItem* ownerCategory)
 {
@@ -127,8 +117,6 @@ PagePtr Serializer::Load_page(XmlFileReader* reader, Page* parent, CategoryItem*
 }
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 CategoryManagerPtr Serializer::Load_categories(XmlFileReader* reader)
 {
 	auto ptr = CategoryManagerPtr::MakeRef(m_manager);
@@ -149,8 +137,6 @@ CategoryManagerPtr Serializer::Load_categories(XmlFileReader* reader)
 	return ptr;
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 CategoryItemPtr Serializer::Load_category(XmlFileReader* reader, CategoryManager* manager, CategoryItem* parent)
 {
@@ -186,8 +172,6 @@ CategoryItemPtr Serializer::Load_category(XmlFileReader* reader, CategoryManager
 }
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 void Serializer::Load_category_index(XmlFileReader* reader, CategoryItem* category)
 {
 	// child elements
@@ -207,8 +191,6 @@ void Serializer::Load_category_index(XmlFileReader* reader, CategoryItem* catego
 	}
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 PageTocPtr Serializer::Load_toc(XmlFileReader* reader, CategoryItem* ownerCategory)
 {

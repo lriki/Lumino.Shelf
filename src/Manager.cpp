@@ -42,7 +42,14 @@ void Manager::Build()
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-String Manager::GetPageTemplateText()
+String Manager::GetPageTemplateText(const PathName& priority)
 {
-	return FileSystem::ReadAllText(PathName(m_templateDirectory, _T("page.html")).c_str(), Encoding::GetUTF8Encoding());
+	if (priority.IsEmpty())
+	{
+		return FileSystem::ReadAllText(PathName(m_templateDirectory, _T("page.html")).c_str(), Encoding::GetUTF8Encoding());
+	}
+	else
+	{
+		return FileSystem::ReadAllText(priority.c_str(), Encoding::GetUTF8Encoding());
+	}
 }
