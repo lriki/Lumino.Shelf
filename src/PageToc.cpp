@@ -7,12 +7,10 @@
 //==============================================================================
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 String PageToc::MakeTocTreeText(Page* currentPage)
 {
 	StringWriter writer;
-	writer.WriteLine(_T("<div class=\"col-md-3\">"));
+	//writer.WriteLine(_T("<div class=\"col-md-3\">"));
 	writer.WriteLine(_T("<ul class=\"list-group\">"));
 
 	for (PagePtr item : m_rootPages)
@@ -42,13 +40,11 @@ String PageToc::MakeTocTreeText(Page* currentPage)
 	}
 
 	writer.WriteLine(_T("</ul>"));
-	writer.WriteLine(_T("</div>"));
+	//writer.WriteLine(_T("</div>"));
 	return writer.ToString();
 }
 
 #if 0
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 void PageToc::Initialize(CategoryItem* owner, const PathName& tocFilePath)
 {
@@ -117,8 +113,6 @@ void PageToc::Initialize(CategoryItem* owner, const PathName& tocFilePath)
 }
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 String PageToc::MakeTocTreeText(Page* currentPage)
 {
 	StringWriter writer;
@@ -146,8 +140,6 @@ String PageToc::MakeTocTreeText(Page* currentPage)
 	return writer.ToString();
 }
 
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 void PageToc::MakeTocTreeItemText(StringWriter* writer, PageTocItem* item)
 {

@@ -7,8 +7,6 @@
 //==============================================================================
 
 //------------------------------------------------------------------------------
-//
-//------------------------------------------------------------------------------
 void Manager::Build()
 {
 #if 0
@@ -36,11 +34,11 @@ void Manager::Build()
 	// template フォルダからそのままコピーするもの
 	FileSystem::CopyDirectory(PathName(m_templateDirectory, _T("bootstrap")), PathName(m_releaseDirectory, _T("bootstrap")), true, true);
 	FileSystem::Copy(PathName(m_templateDirectory, _T("github-markdown.css")), PathName(m_releaseDirectory, _T("github-markdown.css")), true);
+
+	// favicon
+	FileSystem::Copy(PathName(m_sourceDirectory, m_faviconPath), PathName(m_releaseDirectory, m_faviconPath), true);
 }
 
-
-//------------------------------------------------------------------------------
-//
 //------------------------------------------------------------------------------
 String Manager::GetPageTemplateText(const PathName& priority)
 {
@@ -52,4 +50,10 @@ String Manager::GetPageTemplateText(const PathName& priority)
 	{
 		return FileSystem::ReadAllText(priority.c_str(), Encoding::GetUTF8Encoding());
 	}
+}
+
+//------------------------------------------------------------------------------
+String Manager::GetFooterText() const
+{
+	return FileSystem::ReadAllText(PathName(m_sourceDirectory, m_footerTemplatePath), Encoding::GetUTF8Encoding());
 }

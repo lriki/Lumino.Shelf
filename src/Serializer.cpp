@@ -44,6 +44,20 @@ ManagerPtr Serializer::Load_shelf(XmlFileReader* reader)
 	m_manager->SetTemplateDirectory(_T("C:/Proj/Lumino.Shelf/doc/templates"));	// TODO
 	m_manager->SetReleaseDirectory(_T("C:/Proj/Lumino/doc/shelf/release"));		// TODO
 
+	// attributes
+	if (reader->MoveToFirstAttribute())
+	{
+		do
+		{
+			if (reader->GetName() == _T("favicon")) ptr->m_faviconPath = reader->GetValue();
+			if (reader->GetName() == _T("site_title")) ptr->m_siteTitle = reader->GetValue();
+			if (reader->GetName() == _T("footer_template")) ptr->m_footerTemplatePath = reader->GetValue();
+
+		} while (reader->MoveToNextAttribute());
+
+		reader->MoveToElement();
+	}
+
 	// child elements
 	if (reader->IsEmptyElement()) return ptr;
 	while (reader->Read())
@@ -66,19 +80,21 @@ ManagerPtr Serializer::Load_shelf(XmlFileReader* reader)
 //------------------------------------------------------------------------------
 PagePtr Serializer::Load_homepage(XmlFileReader* reader, CategoryItem* ownerCategory)
 {
+	PagePtr page;
+
 	// child elements
 	if (reader->IsEmptyElement()) return nullptr;
 	while (reader->Read())
 	{
-		if (reader->GetNodeType() == XmlNodeType::EndElement) return nullptr;
+		if (reader->GetNodeType() == XmlNodeType::EndElement) break;
 
 		if (reader->GetNodeType() == XmlNodeType::Element && reader->GetName() == _T("page"))
 		{
-			return Load_page(reader, nullptr, ownerCategory);
+			page = Load_page(reader, nullptr, ownerCategory);
 		}
 	}
 
-	return nullptr;
+	return page;
 }
 
 //------------------------------------------------------------------------------

@@ -53,6 +53,18 @@ void Page::MakePageContents()
 	if (IsRawHTMLPage())
 	{
 		m_pageContentsText = FileSystem::ReadAllText(m_srcFileFullPath, Encoding::GetUTF8Encoding());
+
+		StreamReader reader(m_srcFileFullPath, Encoding::GetUTF8Encoding());
+		String line;
+		while (reader.ReadLine(&line))
+		{
+			MatchResult m;
+			if (Regex::Search(line, _T("<h1>(.*)</h1>"), &m))
+			{
+				m_caption = m[1];
+				break;
+			}
+		}
 	}
 	else
 	{
@@ -93,7 +105,7 @@ void Page::MakePageContents()
 		{
 			// http://am-yu.net/2014/04/20/bootstrap3-affix-scrollspy/
 			StringWriter writer;
-			writer.WriteLine(_T(R"(<div class="col-xs-2">)"));
+			//writer.WriteLine(_T(R"(<div class="col-xs-2">)"));
 			writer.WriteLine(_T(R"(<nav class="affix-nav"><ul class="nav">)"));
 			writer.WriteLine(_T(R"(<li class="cap">page contents</li>)"));
 			for (auto& e : m_linkElementList)
@@ -101,7 +113,7 @@ void Page::MakePageContents()
 				writer.WriteLine(String::Format(_T(R"(<li><a href="#{0}">{1}</a></li>)"), e.href, e.text));
 			}
 			writer.WriteLine(_T(R"(</ul></nav>)"));
-			writer.WriteLine(_T(R"(</div>)"));
+			//writer.WriteLine(_T(R"(</div>)"));
 			m_pageSideNavText = writer.ToString();
 		}
 	}
@@ -114,8 +126,11 @@ void Page::ExportPageFile()
 	{
 		String pageText = m_manager->GetPageTemplateText(m_templateFullPath);
 		pageText = pageText.Replace(_T("$(LN_TO_ROOT_PATH)"), m_relpathToRoot);
+		pageText = pageText.Replace(_T("$(PAGE_TITLE)"), m_caption);
+		pageText = pageText.Replace(_T("$(SITE_TITLE)"), m_manager->GetSiteTitle());
 		pageText = pageText.Replace(_T("$(NAVBAR_ITEMS)"), m_manager->GetCategoryManager()->MakeNavBarListText(this));
 		pageText = pageText.Replace(_T("$(PAGE_CONTENTS)"), m_pageContentsText);
+		pageText = pageText.Replace(_T("$(PAGE_FOOTER)"), m_manager->GetFooterText());
 
 		FileSystem::CreateDirectory(m_outputFileFullPath.GetParent());
 		FileSystem::WriteAllText(m_outputFileFullPath.c_str(), pageText, Encoding::GetUTF8Encoding());
@@ -130,18 +145,21 @@ void Page::ExportPageFile()
 		int contentsCols = 7;
 
 		StringWriter contentsText;
-		contentsText.WriteLine(_T("<div class=\"col-md-{0}\">"), contentsCols);
+		//contentsText.WriteLine(_T("<div class=\"col-md-{0}\">"), contentsCols);
 		contentsText.WriteLine(_T("<arctile class=\"markdown-body\">"));
 		contentsText.WriteLine(m_pageContentsText);
 		contentsText.WriteLine(_T("</arctile>"));
-		contentsText.WriteLine(_T("</div>"));
+		//contentsText.WriteLine(_T("</div>"));
 
 		String pageText = m_manager->GetPageTemplateText(m_templateFullPath);
 		pageText = pageText.Replace(_T("$(LN_TO_ROOT_PATH)"), m_relpathToRoot);
+		pageText = pageText.Replace(_T("$(PAGE_TITLE)"), m_caption);
+		pageText = pageText.Replace(_T("$(SITE_TITLE)"), m_manager->GetSiteTitle());
 		pageText = pageText.Replace(_T("$(NAVBAR_ITEMS)"), m_manager->GetCategoryManager()->MakeNavBarListText(this));
 		pageText = pageText.Replace(_T("$(PAGE_TOC)"), tocTree);
 		pageText = pageText.Replace(_T("$(PAGE_CONTENTS)"), contentsText.ToString());
 		pageText = pageText.Replace(_T("$(PAGE_SIDENAV)"), m_pageSideNavText);
+		pageText = pageText.Replace(_T("$(PAGE_FOOTER)"), m_manager->GetFooterText());
 
 		FileSystem::CreateDirectory(m_outputFileFullPath.GetParent());
 		FileSystem::WriteAllText(m_outputFileFullPath.c_str(), pageText, Encoding::GetUTF8Encoding());

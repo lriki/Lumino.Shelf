@@ -1,5 +1,6 @@
 
 #pragma once
+#include <Lumino/Xml/XmlReader.h>
 #include "Manager.h"
 #include "CategoryManager.h"
 #include "PageToc.h"
