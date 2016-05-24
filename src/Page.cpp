@@ -106,13 +106,13 @@ void Page::MakePageContents()
 			// http://am-yu.net/2014/04/20/bootstrap3-affix-scrollspy/
 			StringWriter writer;
 			//writer.WriteLine(_T(R"(<div class="col-xs-2">)"));
-			writer.WriteLine(_T(R"(<nav class="affix-nav"><ul class="nav">)"));
+			writer.WriteLine(_T(R"(<div id="scroll-spy-target" class="affix-nav" data-spy="affix"><ul class="nav">)"));
 			writer.WriteLine(_T(R"(<li class="cap">page contents</li>)"));
 			for (auto& e : m_linkElementList)
 			{
 				writer.WriteLine(String::Format(_T(R"(<li><a href="#{0}">{1}</a></li>)"), e.href, e.text));
 			}
-			writer.WriteLine(_T(R"(</ul></nav>)"));
+			writer.WriteLine(_T(R"(</ul></div>)"));
 			//writer.WriteLine(_T(R"(</div>)"));
 			m_pageSideNavText = writer.ToString();
 		}
