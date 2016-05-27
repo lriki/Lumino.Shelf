@@ -97,5 +97,12 @@ $(PAGE_FOOTER)
 				});
 			});
 		</script>
+		
+		<script type="text/javascript">
+		$('.nav-tabs li a').click(function (e) {
+		    var href = $(this).attr('href');
+			$('.nav-tabs li a[href="'+href+'"]').tab('show');
+		})
+		</script>
 	</body>
 </html>

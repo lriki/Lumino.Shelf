@@ -47,6 +47,82 @@ String Page::MakeRelativePath(Page* page) const
 	return path.Replace(_T("\\"), _T("/"));
 }
 
+//-----------------------------------------------------------------------------
+void Page::ResolveExtensions(TemporaryFile* file) const
+{
+	int tabSectionCount = 0;
+	{
+		StreamReader reader(m_srcFileFullPath);
+		String line;
+		while (reader.ReadLine(&line))
+		{
+			if (line.IndexOf(_T("<sync-tabs>")) >= 0)
+			{
+				++tabSectionCount;
+			}
+		}
+	}
+
+	String cppTabId, cTabId, csTabId, rubyTabId, hspTabId;
+	for (int i = 0; i < tabSectionCount; ++i)
+	{
+		if (!cppTabId.IsEmpty()) cppTabId += _T(",");
+		cppTabId += String::Format(_T("#cpp{0}"), i + 1);
+		if (!cTabId.IsEmpty()) cTabId += _T(",");
+		cTabId += String::Format(_T("#c{0}"), i + 1);
+		if (!csTabId.IsEmpty()) csTabId += _T(",");
+		csTabId += String::Format(_T("#cs{0}"), i + 1);
+		if (!rubyTabId.IsEmpty()) rubyTabId += _T(",");
+		rubyTabId += String::Format(_T("#ruby{0}"), i + 1);
+		if (!hspTabId.IsEmpty()) hspTabId += _T(",");
+		hspTabId += String::Format(_T("#hsp{0}"), i + 1);
+	}
+
+
+
+	int paneCount = 0;
+
+	StreamReader reader(m_srcFileFullPath);
+	StreamWriter writer(file);
+	String line;
+	while (reader.ReadLine(&line))
+	{
+		MatchResult m;
+		if (line.IndexOf(_T("<sync-tabs>")) >= 0)
+		{
+			writer.WriteLine(_T(R"(<ul id="ln_sync_tabs" class="nav nav-tabs">)"));
+			writer.WriteLine(_T(R"(<li class="active"><a href="#cpp-tab" data-target="{0}" data-toggle="tab">C++</a></li>)"), cppTabId);
+			writer.WriteLine(_T(R"(<li><a href="#c-tab" data-target="{0}" data-toggle="tab">C</a></li>)"), cTabId);
+			writer.WriteLine(_T(R"(<li><a href="#cs-tab" data-target="{0}" data-toggle="tab">C#</a></li>)"), csTabId);
+			writer.WriteLine(_T(R"(<li><a href="#ruby-tab" data-target="{0}" data-toggle="tab">Ruby</a></li>)"), rubyTabId);
+			writer.WriteLine(_T(R"(<li><a href="#hsp-tab" data-target="{0}" data-toggle="tab">HSP</a></li>)"), hspTabId);
+			writer.WriteLine(_T(R"(</ul>)"));
+			writer.WriteLine(_T(R"(<div id="ln_sync_tab_content" class="tab-content">)"));
+		}
+		else if (Regex::Search(line, _T("<sync-tab-pane group=\"(.*)\">"), &m))
+		{
+			if (paneCount == 0)
+				writer.WriteLine(_T(R"(<div class="tab-pane fade in active" id="{0}{1}">)"), m[1], paneCount + 1);
+			else
+				writer.WriteLine(_T(R"(<div class="tab-pane fade" id="{0}{1}">)"), m[1], paneCount + 1);
+			++paneCount;
+		}
+		else if (line.IndexOf(_T("</sync-tab-pane>")) >= 0)
+		{
+			writer.WriteLine(_T("</div>"));
+		}
+		else if (line.IndexOf(_T("</sync-tabs>")) >= 0)
+		{
+			writer.WriteLine(_T("</div>"));
+			paneCount = 0;
+		}
+		else
+		{
+			writer.WriteLine(line);
+		}
+	}
+ }
+
 //------------------------------------------------------------------------------
 void Page::MakePageContents()
 {
@@ -68,8 +144,13 @@ void Page::MakePageContents()
 	}
 	else
 	{
+		TemporaryFile tmpFile;
+		tmpFile.Open();
+		ResolveExtensions(&tmpFile);
+		tmpFile.Close();
+
 		String text;
-		String args = String::Format(_T("-f markdown -t html5 -o tmp \"{0}\""), m_srcFileFullPath);
+		String args = String::Format(_T("-f markdown -t html5 -o tmp \"{0}\""), tmpFile.GetFilePath()/*m_srcFileFullPath*/);
 		String stdErr;
 		int exitCode = Process::Execute(_T("pandoc"), args, nullptr, &stdErr);	// TODO: 標準出力のエンコーディングを指定したい・・・。とりあえず今は一度ファイルに落とす
 		if (exitCode != 0)
