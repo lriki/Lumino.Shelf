@@ -47,6 +47,110 @@ String Page::MakeRelativePath(Page* page) const
 	return path.Replace(_T("\\"), _T("/"));
 }
 
+
+class PageExampleManager
+{
+public:
+
+	struct LangInfo
+	{
+		String					extName;
+		String					tabName;
+		String					targetTabIds;
+		RefPtr<StringWriter>	text;
+	};
+
+	PageExampleManager()
+	{
+		m_langInfoList.Resize(5);
+		m_langInfoList[0].extName = _T("cpp");
+		m_langInfoList[0].tabName = _T("C++");
+		m_langInfoList[1].extName = _T("cs");
+		m_langInfoList[1].tabName = _T("C#");
+		m_langInfoList[2].extName = _T("ruby");
+		m_langInfoList[2].tabName = _T("Ruby");
+		m_langInfoList[3].extName = _T("c");
+		m_langInfoList[3].tabName = _T("C");
+		m_langInfoList[4].extName = _T("hsp");
+		m_langInfoList[4].tabName = _T("HSP");
+		Reset();
+	}
+
+	void Reset()
+	{
+		m_current = -1;
+		m_tabSectionCount = 0;
+		for (auto& info : m_langInfoList)
+		{
+			info.text = RefPtr<StringWriter>::MakeRef();
+		}
+	}
+
+	void SetCurrent(const String& extName)
+	{
+		m_current = m_langInfoList.IndexOf([extName](const LangInfo& info) { return info.extName == extName; });
+		m_tabSectionCount++;
+
+		if (m_current >= 0)
+		{
+			m_langInfoList[m_current].text->WriteLine(_T("```{0}"), extName);
+		}
+	}
+
+	void WriteLine(const String& line)
+	{
+		m_langInfoList[m_current].text->WriteLine(line);
+	}
+
+	void Export(TextWriter* writer, int paneIndex)
+	{
+		String cppTabId, cTabId, csTabId, rubyTabId, hspTabId;
+		for (int i = 0; i < m_tabSectionCount; ++i)
+		{
+			if (!cppTabId.IsEmpty()) cppTabId += _T(",");
+			cppTabId += String::Format(_T("#cpp{0}"), i + 1);
+			if (!cTabId.IsEmpty()) cTabId += _T(",");
+			cTabId += String::Format(_T("#c{0}"), i + 1);
+			if (!csTabId.IsEmpty()) csTabId += _T(",");
+			csTabId += String::Format(_T("#cs{0}"), i + 1);
+			if (!rubyTabId.IsEmpty()) rubyTabId += _T(",");
+			rubyTabId += String::Format(_T("#ruby{0}"), i + 1);
+			if (!hspTabId.IsEmpty()) hspTabId += _T(",");
+			hspTabId += String::Format(_T("#hsp{0}"), i + 1);
+		}
+
+		writer->WriteLine(_T(R"(<ul id="ln_sync_tabs" class="nav nav-tabs">)"));
+		writer->WriteLine(_T(R"(<li class="active"><a href="#cpp-tab" data-target="{0}" data-toggle="tab">C++</a></li>)"), cppTabId);
+		writer->WriteLine(_T(R"(<li><a href="#c-tab" data-target="{0}" data-toggle="tab">C</a></li>)"), cTabId);
+		writer->WriteLine(_T(R"(<li><a href="#cs-tab" data-target="{0}" data-toggle="tab">C#</a></li>)"), csTabId);
+		writer->WriteLine(_T(R"(<li><a href="#ruby-tab" data-target="{0}" data-toggle="tab">Ruby</a></li>)"), rubyTabId);
+		writer->WriteLine(_T(R"(<li><a href="#hsp-tab" data-target="{0}" data-toggle="tab">HSP</a></li>)"), hspTabId);
+		writer->WriteLine(_T(R"(</ul>)"));
+		writer->WriteLine(_T(R"(<div id="ln_sync_tab_content" class="tab-content">)"));
+
+		for (int i = 0; i < m_langInfoList.GetCount(); ++i)
+		{
+			auto& info = m_langInfoList[i];
+			if (i == 0)
+				writer->WriteLine(_T(R"(<div class="tab-pane fade in active" id="{0}{1}">)"), info.extName, paneIndex + 1);
+			else
+				writer->WriteLine(_T(R"(<div class="tab-pane fade" id="{0}{1}">)"), info.extName, paneIndex + 1);
+
+			writer->WriteLine(info.text->ToString());
+
+			writer->WriteLine(_T(R"(</div>)"));
+		}
+
+		writer->WriteLine(_T(R"(</div>)"));
+	}
+
+private:
+	Array<LangInfo>	m_langInfoList;
+	int				m_current;
+	int				m_tabSectionCount;
+};
+
+
 //-----------------------------------------------------------------------------
 void Page::ResolveExtensions(TemporaryFile* file) const
 {
@@ -63,62 +167,50 @@ void Page::ResolveExtensions(TemporaryFile* file) const
 		}
 	}
 
-	String cppTabId, cTabId, csTabId, rubyTabId, hspTabId;
-	for (int i = 0; i < tabSectionCount; ++i)
-	{
-		if (!cppTabId.IsEmpty()) cppTabId += _T(",");
-		cppTabId += String::Format(_T("#cpp{0}"), i + 1);
-		if (!cTabId.IsEmpty()) cTabId += _T(",");
-		cTabId += String::Format(_T("#c{0}"), i + 1);
-		if (!csTabId.IsEmpty()) csTabId += _T(",");
-		csTabId += String::Format(_T("#cs{0}"), i + 1);
-		if (!rubyTabId.IsEmpty()) rubyTabId += _T(",");
-		rubyTabId += String::Format(_T("#ruby{0}"), i + 1);
-		if (!hspTabId.IsEmpty()) hspTabId += _T(",");
-		hspTabId += String::Format(_T("#hsp{0}"), i + 1);
-	}
 
 
 
-	int paneCount = 0;
+	int paneCount = -1;
+	bool inTabsSection = false;
 
 	StreamReader reader(m_srcFileFullPath);
 	StreamWriter writer(file);
 	String line;
+	PageExampleManager exampleManager;
 	while (reader.ReadLine(&line))
 	{
 		MatchResult m;
-		if (line.IndexOf(_T("<sync-tabs>")) >= 0)
+
+		if (!inTabsSection)
 		{
-			writer.WriteLine(_T(R"(<ul id="ln_sync_tabs" class="nav nav-tabs">)"));
-			writer.WriteLine(_T(R"(<li class="active"><a href="#cpp-tab" data-target="{0}" data-toggle="tab">C++</a></li>)"), cppTabId);
-			writer.WriteLine(_T(R"(<li><a href="#c-tab" data-target="{0}" data-toggle="tab">C</a></li>)"), cTabId);
-			writer.WriteLine(_T(R"(<li><a href="#cs-tab" data-target="{0}" data-toggle="tab">C#</a></li>)"), csTabId);
-			writer.WriteLine(_T(R"(<li><a href="#ruby-tab" data-target="{0}" data-toggle="tab">Ruby</a></li>)"), rubyTabId);
-			writer.WriteLine(_T(R"(<li><a href="#hsp-tab" data-target="{0}" data-toggle="tab">HSP</a></li>)"), hspTabId);
-			writer.WriteLine(_T(R"(</ul>)"));
-			writer.WriteLine(_T(R"(<div id="ln_sync_tab_content" class="tab-content">)"));
-		}
-		else if (Regex::Search(line, _T("<sync-tab-pane group=\"(.*)\">"), &m))
-		{
-			if (paneCount == 0)
-				writer.WriteLine(_T(R"(<div class="tab-pane fade in active" id="{0}{1}">)"), m[1], paneCount + 1);
+			if (line.IndexOf(_T("<sync-tabs>")) >= 0)
+			{
+				inTabsSection = true;
+				paneCount++;
+				exampleManager.Reset();
+			}
 			else
-				writer.WriteLine(_T(R"(<div class="tab-pane fade" id="{0}{1}">)"), m[1], paneCount + 1);
-			++paneCount;
-		}
-		else if (line.IndexOf(_T("</sync-tab-pane>")) >= 0)
-		{
-			writer.WriteLine(_T("</div>"));
-		}
-		else if (line.IndexOf(_T("</sync-tabs>")) >= 0)
-		{
-			writer.WriteLine(_T("</div>"));
-			paneCount = 0;
+			{
+				writer.WriteLine(line);
+			}
 		}
 		else
 		{
-			writer.WriteLine(line);
+			if (Regex::Search(line, _T("````*([^`]+)"), &m))
+			{
+				exampleManager.SetCurrent(m[1]);
+			}
+			else if (line.IndexOf(_T("</sync-tabs>")) >= 0)
+			{
+				exampleManager.Export(&writer, paneCount);
+				exampleManager.Reset();
+				paneCount = 0;
+				inTabsSection = false;
+			}
+			else
+			{
+				exampleManager.WriteLine(line);
+			}
 		}
 	}
  }

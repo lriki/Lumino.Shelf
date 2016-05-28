@@ -55,5 +55,12 @@ String Manager::GetPageTemplateText(const PathName& priority)
 //------------------------------------------------------------------------------
 String Manager::GetFooterText() const
 {
-	return FileSystem::ReadAllText(PathName(m_sourceDirectory, m_footerTemplatePath), Encoding::GetUTF8Encoding());
+	return FileSystem::ReadAllText(PathName(m_templateDirectory, m_footerTemplatePath), Encoding::GetUTF8Encoding());
+}
+
+//------------------------------------------------------------------------------
+void Manager::GenerateTemplate()
+{
+	PathName templateDir(PathName::GetExecutablePath().GetParent(), _T("template"));
+	FileSystem::CopyDirectory(templateDir, PathName::GetCurrentDirectory(), true, true);
 }

@@ -26,6 +26,8 @@ public:
 	String GetFooterText() const;
 	void AddPage(PagePtr page) { m_allPages.Add(page); }
 
+	static void GenerateTemplate();
+
 private:
 	friend class Serializer;
 	PathName			m_sourceDirectory;

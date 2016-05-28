@@ -41,8 +41,8 @@ ManagerPtr Serializer::Load_shelf(XmlFileReader* reader)
 	auto ptr = ManagerPtr::MakeRef();
 	m_manager = ptr;
 	m_manager->SetSourceDirectory(reader->GetFilePath().GetParent());
-	m_manager->SetTemplateDirectory(_T("C:/Proj/Lumino.Shelf/doc/templates"));	// TODO
-	m_manager->SetReleaseDirectory(_T("C:/Proj/Lumino/doc/shelf/release"));		// TODO
+	m_manager->SetTemplateDirectory(PathName(reader->GetFilePath().GetParent(), _T("templates")));
+	m_manager->SetReleaseDirectory(PathName(reader->GetFilePath().GetParent(), _T("release")));
 
 	// attributes
 	if (reader->MoveToFirstAttribute())
@@ -108,7 +108,7 @@ PagePtr Serializer::Load_page(XmlFileReader* reader, Page* parent, CategoryItem*
 		do
 		{
 			if (reader->GetName() == _T("src")) ptr->m_srcFullPath = PathName(reader->GetFilePath().GetParent(), reader->GetValue());
-			if (reader->GetName() == _T("template")) ptr->m_templateFullPath = PathName(reader->GetFilePath().GetParent(), reader->GetValue());
+			if (reader->GetName() == _T("template")) ptr->m_templateFullPath = PathName(m_manager->GetTemplateDirectory(), reader->GetValue());
 			if (reader->GetName() == _T("caption")) ptr->m_caption = reader->GetValue();
 
 		} while (reader->MoveToNextAttribute());

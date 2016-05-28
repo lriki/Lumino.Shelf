@@ -42,3 +42,8 @@ add_subdirectory(external/Lumino.Core)
 link_libraries(LuminoCore_Static)
 
 add_executable(${PROJECT_NAME} ${LN_LuminoShelf_Sources})
+add_custom_command(
+	TARGET ${PROJECT_NAME}
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> "${CMAKE_SOURCE_DIR}/bin")
+

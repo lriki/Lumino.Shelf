@@ -13,7 +13,7 @@ int main(int argc, char **argv)
 	{
 #if 1
 		Serializer serializer;
-		ManagerPtr manager = serializer.LoadManager(_T("C:/Proj/Lumino/doc/shelf/shelf.xml"));
+		ManagerPtr manager = serializer.LoadManager(_T("D:/Proj/Volkoff/External/Lumino/doc/shelf/shelf.xml"));
 
 		manager->Build();
 
