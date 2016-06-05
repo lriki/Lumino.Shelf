@@ -67,7 +67,7 @@ public:
 		m_langInfoList[0].tabName = _T("C++");
 		m_langInfoList[1].extName = _T("cs");
 		m_langInfoList[1].tabName = _T("C#");
-		m_langInfoList[2].extName = _T("ruby");
+		m_langInfoList[2].extName = _T("rb");
 		m_langInfoList[2].tabName = _T("Ruby");
 		m_langInfoList[3].extName = _T("c");
 		m_langInfoList[3].tabName = _T("C");
@@ -114,7 +114,7 @@ public:
 			if (!csTabId.IsEmpty()) csTabId += _T(",");
 			csTabId += String::Format(_T("#cs{0}"), i + 1);
 			if (!rubyTabId.IsEmpty()) rubyTabId += _T(",");
-			rubyTabId += String::Format(_T("#ruby{0}"), i + 1);
+			rubyTabId += String::Format(_T("#rb{0}"), i + 1);
 			if (!hspTabId.IsEmpty()) hspTabId += _T(",");
 			hspTabId += String::Format(_T("#hsp{0}"), i + 1);
 		}
@@ -123,7 +123,7 @@ public:
 		writer->WriteLine(_T(R"(<li class="active"><a href="#cpp-tab" data-target="{0}" data-toggle="tab">C++</a></li>)"), cppTabId);
 		writer->WriteLine(_T(R"(<li><a href="#c-tab" data-target="{0}" data-toggle="tab">C</a></li>)"), cTabId);
 		writer->WriteLine(_T(R"(<li><a href="#cs-tab" data-target="{0}" data-toggle="tab">C#</a></li>)"), csTabId);
-		writer->WriteLine(_T(R"(<li><a href="#ruby-tab" data-target="{0}" data-toggle="tab">Ruby</a></li>)"), rubyTabId);
+		writer->WriteLine(_T(R"(<li><a href="#rb-tab" data-target="{0}" data-toggle="tab">Ruby</a></li>)"), rubyTabId);
 		writer->WriteLine(_T(R"(<li><a href="#hsp-tab" data-target="{0}" data-toggle="tab">HSP</a></li>)"), hspTabId);
 		writer->WriteLine(_T(R"(</ul>)"));
 		writer->WriteLine(_T(R"(<div id="ln_sync_tab_content" class="tab-content">)"));
@@ -180,6 +180,21 @@ void Page::ResolveExtensions(TemporaryFile* file) const
 	while (reader.ReadLine(&line))
 	{
 		MatchResult m;
+
+		if (Regex::Search(line, _T(R"(\[:include\((.*)\)\])"), &m))
+		{
+			PathName path(m_srcFileFullPath.GetParent(), m[1]);
+			String t = FileSystem::ReadAllText(path);
+			if (inTabsSection)
+			{
+				exampleManager.WriteLine(t);
+			}
+			else
+			{
+				writer.WriteLine(t);
+			}
+			continue;
+		}
 
 		if (!inTabsSection)
 		{
